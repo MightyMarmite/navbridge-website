@@ -1,0 +1,988 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout
+  title="NavBridge — Automated Valuation Reconciliation for Private Markets"
+  description="NavBridge extracts fund manager valuations from PDFs and emails, verifies every figure against source text, and produces an updated master ready for downstream systems. Purpose-built for family offices managing 3–30 underlying funds."
+>
+<style>
+/* ── TOKENS ──────────────────────────────────────────── */
+:root {
+  --nb-navy:      #0B1929;
+  --nb-navy-alt:  #0F2235;
+  --nb-navy-card: #132840;
+  --nb-light:     #F4F7FA;
+  --nb-white:     #FFFFFF;
+  --nb-border:    #DCE4EE;
+  --nb-border-dk: #1A3352;
+  --nb-text:      #0B1929;
+  --nb-text-sec:  #4A6070;
+  --nb-text-muted:#7A96A8;
+  --nb-text-lt:   #E8EDF2;
+  --nb-text-lt-dim:#7A96A8;
+  --nb-teal:      #00BFA6;
+  --nb-teal-dk:   #009E88;
+  --nb-teal-lt:   #33CFBA;
+  --nb-teal-glow: rgba(0,191,166,0.12);
+  --nb-head:      'Cormorant Garamond', Georgia, serif;
+  --nb-body:      'DM Sans', system-ui, sans-serif;
+  --nav-h:        68px;
+  --max-w:        1160px;
+  --gutter:       clamp(20px,5vw,64px);
+  --section-pad:  clamp(64px,8vw,112px);
+  --ease:         cubic-bezier(0.16,1,0.3,1);
+}
+
+/* ── BASE ────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body { background: var(--nb-light); color: var(--nb-text); font-family: var(--nb-body); font-size: 16px; line-height: 1.7; overflow-x: hidden; }
+a { color: inherit; text-decoration: none; }
+
+.container { width: 100%; max-width: var(--max-w); margin: 0 auto; padding: 0 var(--gutter); }
+
+/* ── TYPOGRAPHY HELPERS ──────────────────────────────── */
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: var(--nb-body); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--nb-teal); margin-bottom: 20px;
+}
+.eyebrow::before {
+  content: ''; display: block; width: 24px; height: 1px;
+  background: var(--nb-teal); flex-shrink: 0;
+}
+.eyebrow-lt { color: var(--nb-teal-lt); }
+.eyebrow-lt::before { background: var(--nb-teal-lt); }
+
+.section-title {
+  font-family: var(--nb-head); font-weight: 300;
+  letter-spacing: -0.01em; line-height: 1.1;
+}
+.section-title em { font-style: italic; color: var(--nb-teal); font-weight: 300; }
+
+/* ── BUTTONS ─────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--nb-body); font-size: 12px; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--nb-navy); background: var(--nb-teal);
+  padding: 14px 32px; border: none; cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-primary:hover { background: var(--nb-teal-lt); transform: translateY(-1px); }
+
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--nb-text-lt);
+  background: transparent; padding: 13px 28px;
+  border: 1px solid var(--nb-border-dk); cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-ghost:hover { border-color: var(--nb-teal); color: var(--nb-teal); }
+
+.btn-text-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 500; color: var(--nb-teal);
+  transition: gap 0.2s;
+}
+.btn-text-link:hover { gap: 12px; }
+
+/* ── HERO ────────────────────────────────────────────── */
+.hero {
+  min-height: 100vh; min-height: 100dvh;
+  display: flex; align-items: center;
+  background: var(--nb-navy);
+  position: relative; overflow: hidden;
+  padding-top: var(--nav-h);
+}
+.hero-grid-overlay {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0,191,166,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,191,166,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.hero-glow {
+  position: absolute; top: -20%; right: -10%;
+  width: 60vw; height: 60vw; max-width: 700px; max-height: 700px;
+  background: radial-gradient(circle, rgba(0,191,166,0.07) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-glow-2 {
+  position: absolute; bottom: -10%; left: -5%;
+  width: 40vw; height: 40vw; max-width: 400px; max-height: 400px;
+  background: radial-gradient(circle, rgba(0,191,166,0.04) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-inner {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 64px; align-items: center;
+  padding: 72px 0 80px;
+}
+.hero-headline {
+  font-family: var(--nb-head); font-weight: 300;
+  font-size: clamp(40px, 5vw, 68px);
+  line-height: 1.04; letter-spacing: -0.02em;
+  color: var(--nb-text-lt);
+}
+.hero-headline em { font-style: italic; color: var(--nb-teal); font-weight: 300; }
+.hero-line { overflow: hidden; display: block; }
+.hero-line span {
+  display: block; opacity: 0; transform: translateY(32px);
+  animation: slideUp 0.85s var(--ease) forwards;
+}
+.hero-line:nth-child(1) span { animation-delay: 0.1s; }
+.hero-line:nth-child(2) span { animation-delay: 0.22s; }
+.hero-line:nth-child(3) span { animation-delay: 0.34s; }
+.hero-line:nth-child(4) span { animation-delay: 0.46s; }
+@keyframes slideUp { to { opacity: 1; transform: none; } }
+
+.hero-standfirst {
+  font-size: 17px; line-height: 1.65;
+  color: var(--nb-text-lt-dim);
+  margin: 28px 0 36px;
+  opacity: 0; animation: fadeUp 0.85s var(--ease) 0.6s forwards;
+  max-width: 480px;
+}
+@keyframes fadeUp { to { opacity: 1; transform: none; } }
+.hero-standfirst { transform: translateY(12px); }
+
+.hero-actions {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  opacity: 0; animation: fadeUp 0.85s var(--ease) 0.75s forwards;
+  transform: translateY(12px);
+}
+
+.hero-panel {
+  background: var(--nb-navy-card);
+  border: 1px solid var(--nb-border-dk);
+  padding: 32px;
+  opacity: 0; animation: fadeUp 0.85s var(--ease) 0.5s forwards;
+  transform: translateY(16px);
+}
+.hero-panel-label {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--nb-teal); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.hero-panel-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--nb-teal); }
+.pipeline-step {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 12px 0; border-bottom: 1px solid var(--nb-border-dk);
+}
+.pipeline-step:last-child { border-bottom: none; }
+.step-num {
+  width: 24px; height: 24px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
+  color: var(--nb-navy); background: var(--nb-teal);
+  border-radius: 50%;
+}
+.step-content {}
+.step-name { font-size: 13px; font-weight: 500; color: var(--nb-text-lt); }
+.step-desc { font-size: 12px; color: var(--nb-text-lt-dim); line-height: 1.5; margin-top: 2px; }
+
+/* ── PROOF BAR ───────────────────────────────────────── */
+.proof-bar {
+  background: var(--nb-navy-alt);
+  border-bottom: 1px solid var(--nb-border-dk);
+  border-top: 1px solid var(--nb-border-dk);
+  padding: 20px 0;
+}
+.proof-items {
+  display: flex; align-items: center; justify-content: center;
+  gap: 48px; flex-wrap: wrap;
+}
+.proof-item {
+  display: flex; align-items: center; gap: 10px;
+}
+.proof-icon {
+  width: 20px; height: 20px; color: var(--nb-teal); flex-shrink: 0;
+}
+.proof-item span {
+  font-size: 13px; color: var(--nb-text-lt-dim); font-weight: 400;
+}
+.proof-sep {
+  width: 1px; height: 20px;
+  background: var(--nb-border-dk); flex-shrink: 0;
+}
+
+/* ── HOW IT WORKS ────────────────────────────────────── */
+.how-section {
+  padding: var(--section-pad) 0;
+  background: var(--nb-light);
+}
+.section-header { max-width: 580px; margin-bottom: 64px; }
+.section-body { font-size: 16px; line-height: 1.7; color: var(--nb-text-sec); margin-top: 16px; }
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--nb-border);
+  border: 1px solid var(--nb-border);
+  margin-bottom: 1px;
+}
+.steps-grid-row2 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--nb-border);
+  border: 1px solid var(--nb-border);
+  border-top: none;
+}
+.step-card {
+  background: var(--nb-white);
+  padding: 32px 28px;
+  position: relative;
+  transition: background 0.2s;
+}
+.step-card:hover { background: #FAFAFA; }
+.step-card-num {
+  font-family: var(--nb-head); font-size: 48px; font-weight: 300;
+  color: var(--nb-border); line-height: 1;
+  margin-bottom: 16px; letter-spacing: -0.02em;
+  transition: color 0.2s;
+}
+.step-card:hover .step-card-num { color: var(--nb-teal); }
+.step-card-title {
+  font-family: var(--nb-head); font-size: 22px; font-weight: 300;
+  color: var(--nb-text); line-height: 1.2; margin-bottom: 10px;
+}
+.step-card-title em { font-style: italic; color: var(--nb-teal); }
+.step-card-body { font-size: 14px; line-height: 1.65; color: var(--nb-text-sec); }
+.step-card-tag {
+  display: inline-block; margin-top: 16px;
+  font-size: 10px; font-weight: 500; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--nb-teal);
+  padding: 4px 10px; border: 1px solid rgba(0,191,166,0.3);
+  background: rgba(0,191,166,0.06);
+}
+
+/* ── FEATURES ────────────────────────────────────────── */
+.features-section {
+  padding: var(--section-pad) 0;
+  background: var(--nb-navy);
+}
+.features-section .section-title { color: var(--nb-text-lt); }
+.features-section .section-body { color: var(--nb-text-lt-dim); }
+.features-section .section-header { margin-bottom: 56px; }
+
+.features-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--nb-border-dk);
+  border: 1px solid var(--nb-border-dk);
+}
+.feature-card {
+  background: var(--nb-navy-alt);
+  padding: 36px 28px;
+  transition: background 0.2s;
+}
+.feature-card:hover { background: var(--nb-navy-card); }
+.feature-icon {
+  width: 40px; height: 40px; margin-bottom: 20px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--nb-teal-glow); border: 1px solid rgba(0,191,166,0.2);
+}
+.feature-icon svg { width: 20px; height: 20px; color: var(--nb-teal); }
+.feature-title {
+  font-family: var(--nb-head); font-size: 20px; font-weight: 300;
+  color: var(--nb-text-lt); line-height: 1.2; margin-bottom: 10px;
+}
+.feature-title em { font-style: italic; color: var(--nb-teal); }
+.feature-body { font-size: 14px; line-height: 1.65; color: var(--nb-text-lt-dim); }
+
+/* ── DIFFERENTIATORS ─────────────────────────────────── */
+.diff-section {
+  padding: var(--section-pad) 0;
+  background: var(--nb-light);
+}
+.diff-inner {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center;
+}
+.diff-list { display: flex; flex-direction: column; gap: 0; }
+.diff-item {
+  display: flex; align-items: flex-start; gap: 20px;
+  padding: 24px 0; border-bottom: 1px solid var(--nb-border);
+}
+.diff-item:first-child { border-top: 1px solid var(--nb-border); }
+.diff-check {
+  width: 20px; height: 20px; flex-shrink: 0; margin-top: 2px;
+  background: var(--nb-teal-glow); border: 1px solid rgba(0,191,166,0.3);
+  display: flex; align-items: center; justify-content: center;
+}
+.diff-check svg { width: 11px; height: 11px; color: var(--nb-teal); }
+.diff-item-title { font-size: 15px; font-weight: 500; color: var(--nb-text); margin-bottom: 4px; }
+.diff-item-body { font-size: 14px; color: var(--nb-text-sec); line-height: 1.6; }
+
+.diff-comparison {
+  background: var(--nb-navy);
+  border: 1px solid var(--nb-border-dk);
+  padding: 36px;
+}
+.comp-label {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--nb-text-muted);
+  margin-bottom: 20px;
+}
+.comp-row {
+  display: grid; grid-template-columns: 1fr auto auto;
+  gap: 12px; align-items: center;
+  padding: 12px 0; border-bottom: 1px solid var(--nb-border-dk);
+  font-size: 13px;
+}
+.comp-row:last-child { border-bottom: none; }
+.comp-row-label { color: var(--nb-text-lt-dim); }
+.comp-col-head {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 0 10px; text-align: center;
+}
+.comp-yes { color: var(--nb-teal); font-size: 14px; text-align: center; padding: 0 10px; }
+.comp-no  { color: #E84C4C; font-size: 14px; text-align: center; padding: 0 10px; }
+.comp-part { color: #E8A23A; font-size: 14px; text-align: center; padding: 0 10px; }
+
+/* ── WHO ─────────────────────────────────────────────── */
+.who-section {
+  padding: var(--section-pad) 0;
+  background: var(--nb-navy-alt);
+}
+.who-section .section-title { color: var(--nb-text-lt); }
+.who-section .section-body { color: var(--nb-text-lt-dim); }
+.who-section .section-header { margin-bottom: 56px; }
+.who-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--nb-border-dk);
+  border: 1px solid var(--nb-border-dk);
+}
+.who-card {
+  background: var(--nb-navy-card);
+  padding: 36px 28px;
+}
+.who-card-tag {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--nb-teal);
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.who-card-tag::before { content: ''; display: block; width: 16px; height: 1px; background: var(--nb-teal); }
+.who-card-title {
+  font-family: var(--nb-head); font-size: 24px; font-weight: 300;
+  color: var(--nb-text-lt); line-height: 1.2; margin-bottom: 12px;
+}
+.who-card-body { font-size: 14px; line-height: 1.65; color: var(--nb-text-lt-dim); }
+.who-card-fits { margin-top: 20px; display: flex; flex-direction: column; gap: 6px; }
+.fit-item { font-size: 13px; color: var(--nb-text-lt-dim); display: flex; align-items: flex-start; gap: 8px; }
+.fit-item::before { content: '–'; color: var(--nb-teal); flex-shrink: 0; }
+
+/* ── DATA RESIDENCY CALLOUT ──────────────────────────── */
+.residency-section {
+  padding: 56px 0;
+  background: var(--nb-navy);
+  border-top: 1px solid var(--nb-border-dk);
+  border-bottom: 1px solid var(--nb-border-dk);
+}
+.residency-inner {
+  display: flex; align-items: center; gap: 48px; flex-wrap: wrap;
+}
+.residency-icon {
+  width: 56px; height: 56px; flex-shrink: 0;
+  background: var(--nb-teal-glow); border: 1px solid rgba(0,191,166,0.2);
+  display: flex; align-items: center; justify-content: center;
+}
+.residency-icon svg { width: 28px; height: 28px; color: var(--nb-teal); }
+.residency-text { flex: 1; min-width: 280px; }
+.residency-title {
+  font-family: var(--nb-head); font-size: 24px; font-weight: 300;
+  color: var(--nb-text-lt); margin-bottom: 8px;
+}
+.residency-body { font-size: 15px; color: var(--nb-text-lt-dim); line-height: 1.65; }
+
+/* ── CTA SECTION ─────────────────────────────────────── */
+.cta-section {
+  padding: var(--section-pad) 0;
+  background: var(--nb-teal);
+}
+.cta-inner { max-width: 640px; }
+.cta-title {
+  font-family: var(--nb-head); font-weight: 300;
+  font-size: clamp(32px, 4vw, 52px); line-height: 1.08;
+  letter-spacing: -0.01em; color: var(--nb-navy);
+  margin-bottom: 20px;
+}
+.cta-body {
+  font-size: 16px; line-height: 1.65;
+  color: rgba(11,25,41,0.75); margin-bottom: 36px;
+}
+.btn-cta {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--nb-teal);
+  background: var(--nb-navy); padding: 14px 32px;
+  border: none; cursor: pointer; transition: background 0.2s;
+}
+.btn-cta:hover { background: #0F2235; }
+.btn-cta-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(11,25,41,0.7);
+  border-bottom: 1px solid rgba(11,25,41,0.3);
+  padding-bottom: 2px; transition: color 0.18s, border-color 0.18s;
+}
+.btn-cta-ghost:hover { color: var(--nb-navy); border-color: var(--nb-navy); }
+.cta-actions { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
+
+/* ── RESPONSIVE ──────────────────────────────────────── */
+@media (max-width: 960px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 48px; }
+  .hero-panel { display: none; }
+  .steps-grid { grid-template-columns: repeat(2, 1fr); }
+  .steps-grid-row2 { grid-template-columns: repeat(2, 1fr); }
+  .diff-inner { grid-template-columns: 1fr; gap: 48px; }
+}
+@media (max-width: 700px) {
+  .steps-grid { grid-template-columns: 1fr; }
+  .steps-grid-row2 { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: 1fr; }
+  .who-grid { grid-template-columns: 1fr; }
+  .proof-items { gap: 24px; }
+  .proof-sep { display: none; }
+}
+</style>
+
+<!-- ── HERO ──────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-grid-overlay" aria-hidden="true"></div>
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="hero-glow-2" aria-hidden="true"></div>
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <p class="eyebrow eyebrow-lt">Valuation Reconciliation</p>
+        <h1 class="hero-headline">
+          <span class="hero-line"><span>From manager</span></span>
+          <span class="hero-line"><span>statements to</span></span>
+          <span class="hero-line"><span>clean data. <em>Every</em></span></span>
+          <span class="hero-line"><span>month.</span></span>
+        </h1>
+        <p class="hero-standfirst">
+          NavBridge extracts fund valuations from manager PDFs and emails,
+          verifies every figure against source text, and produces an updated
+          master spreadsheet with full audit trail — ready for downstream
+          systems and board reporting.
+        </p>
+        <div class="hero-actions">
+          <a href="/contact" class="btn-primary">Request access →</a>
+          <a href="#how-it-works" class="btn-ghost">See how it works</a>
+        </div>
+      </div>
+
+      <div class="hero-panel" aria-hidden="true">
+        <p class="hero-panel-label">Full workflow</p>
+        <div class="pipeline-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-name">Upload</div>
+            <div class="step-desc">Master spreadsheet + source PDFs and emails from managers</div>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-name">Detect &amp; Extract</div>
+            <div class="step-desc">Per-firm profiles drive LLM extraction with forced tool schema</div>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-name">Verify</div>
+            <div class="step-desc">Citation grounding confirms every value against source text</div>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-name">Risk Assessment</div>
+            <div class="step-desc">Rules engine surfaces HIGHs, MEDIUMs and entity mismatches</div>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-name">Human Approval ×2</div>
+            <div class="step-desc">Data gate, then CSV gate — both operator-controlled</div>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">6</div>
+          <div class="step-content">
+            <div class="step-name">Download</div>
+            <div class="step-desc">Updated master + Load File A &amp; B for downstream systems</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROOF BAR ──────────────────────────────────────── -->
+<div class="proof-bar">
+  <div class="container">
+    <div class="proof-items">
+      <div class="proof-item">
+        <svg class="proof-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M10 2L12.4 7.4L18 8.3L14 12.2L14.9 18L10 15.4L5.1 18L6 12.2L2 8.3L7.6 7.4L10 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+        <span>Citation-grounded extraction</span>
+      </div>
+      <div class="proof-sep" aria-hidden="true"></div>
+      <div class="proof-item">
+        <svg class="proof-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <rect x="3" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="11" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="3" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M14 11V17M11 14H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span>Per-firm extraction profiles</span>
+      </div>
+      <div class="proof-sep" aria-hidden="true"></div>
+      <div class="proof-item">
+        <svg class="proof-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M10 2C6 2 3 5 3 9C3 13 6 17 10 18C14 17 17 13 17 9C17 5 14 2 10 2Z" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M7 9L9 11L13 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Two human approval gates</span>
+      </div>
+      <div class="proof-sep" aria-hidden="true"></div>
+      <div class="proof-item">
+        <svg class="proof-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <rect x="2" y="4" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M6 8H14M6 11H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span>Full audit trail</span>
+      </div>
+      <div class="proof-sep" aria-hidden="true"></div>
+      <div class="proof-item">
+        <svg class="proof-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 6V10L13 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span>EU data residency</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HOW IT WORKS ───────────────────────────────────── -->
+<section class="how-section" id="how-it-works">
+  <div class="container">
+    <div class="section-header reveal">
+      <p class="eyebrow">How it works</p>
+      <h2 class="section-title" style="font-size:clamp(32px,4vw,48px);">
+        A structured workflow for every <em>monthly cycle</em>
+      </h2>
+      <p class="section-body">
+        NavBridge replaces the manual process of copying figures from fund manager PDFs
+        into a master spreadsheet. Each run produces a verified, auditable update in under
+        ten minutes — with every extraction traceable to source text.
+      </p>
+    </div>
+
+    <div class="steps-grid reveal reveal-d1">
+      <div class="step-card">
+        <div class="step-card-num">01</div>
+        <div class="step-card-title"><em>Upload</em> your master</div>
+        <p class="step-card-body">
+          Drop your master valuation spreadsheet and source files — PDFs, emails,
+          capital account statements — from each underlying fund manager.
+        </p>
+        <span class="step-card-tag">Accepts PDF &amp; email</span>
+      </div>
+      <div class="step-card">
+        <div class="step-card-num">02</div>
+        <div class="step-card-title">Firm <em>detection</em></div>
+        <p class="step-card-body">
+          NavBridge identifies which manager each document belongs to via sender domain
+          whitelist, body markers, or LLM inference — automatically, without manual tagging.
+        </p>
+        <span class="step-card-tag">Deterministic first</span>
+      </div>
+      <div class="step-card">
+        <div class="step-card-num">03</div>
+        <div class="step-card-title">LLM <em>extraction</em></div>
+        <p class="step-card-body">
+          Per-firm YAML profiles encode exactly what to extract — share class names, period
+          format, value labels, sanity ranges. Claude extracts using a forced tool schema
+          that rejects any structural deviation.
+        </p>
+        <span class="step-card-tag">Profile-driven</span>
+      </div>
+      <div class="step-card">
+        <div class="step-card-num">04</div>
+        <div class="step-card-title">Citation <em>verification</em></div>
+        <p class="step-card-body">
+          Every extracted value must carry a verbatim quote from the source document.
+          A deterministic check confirms that exact text appears in the parsed source.
+          Fabricated figures cannot pass this gate.
+        </p>
+        <span class="step-card-tag">Anti-hallucination</span>
+      </div>
+    </div>
+
+    <div class="steps-grid-row2 reveal reveal-d2">
+      <div class="step-card">
+        <div class="step-card-num">05</div>
+        <div class="step-card-title">Risk <em>assessment</em></div>
+        <p class="step-card-body">
+          A rules engine surfaces HIGH and MEDIUM findings: entity mismatches,
+          material movements, downgrade protection flags, new-row creation, and
+          missing sender whitelists. HIGHs are auto-blocked; MEDIUMs are
+          operator decisions.
+        </p>
+        <span class="step-card-tag">Rules engine</span>
+      </div>
+      <div class="step-card">
+        <div class="step-card-num">06</div>
+        <div class="step-card-title">Two-gate <em>approval</em></div>
+        <p class="step-card-body">
+          You review the proposed updates and approve the data. NavBridge recalculates
+          the master (Price, YTD, derived cells via LibreOffice headless) and shows
+          you a CSV preview. You approve the CSVs. Both gates are yours.
+        </p>
+        <span class="step-card-tag">Human in the loop</span>
+      </div>
+      <div class="step-card">
+        <div class="step-card-num">07</div>
+        <div class="step-card-title"><em>Download</em> &amp; load</div>
+        <p class="step-card-body">
+          Download the updated master spreadsheet and two CSV load files —
+          Load File A and Load File B — formatted for your downstream portfolio
+          and risk systems. Every run is logged, timestamped, and archived.
+        </p>
+        <span class="step-card-tag">Ready for downstream</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ───────────────────────────────────────── -->
+<section class="features-section" id="features">
+  <div class="container">
+    <div class="section-header reveal">
+      <p class="eyebrow eyebrow-lt">Features</p>
+      <h2 class="section-title" style="font-size:clamp(32px,4vw,48px); color:var(--nb-text-lt);">
+        Built for accuracy, <em>not automation for its own sake</em>
+      </h2>
+      <p class="section-body">
+        NavBridge uses AI where it adds genuine value — understanding unstructured fund
+        documents — and deterministic verification everywhere accuracy matters.
+      </p>
+    </div>
+
+    <div class="features-grid reveal reveal-d1">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M4 4H9V9H4V4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M11 4H16V9H11V4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M4 11H9V16H4V11Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M13.5 11V16M11 13.5H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="feature-title"><em>Per-firm</em> profiles</h3>
+        <p class="feature-body">
+          YAML profiles encode each manager's document structure — share class enumerations,
+          period regex, value label mappings, hard sanity ranges. The extraction is specific
+          to each firm, not generic.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M3 10C3 6.1 6.1 3 10 3C13.9 3 17 6.1 17 10C17 13.9 13.9 17 10 17C6.1 17 3 13.9 3 10Z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M7 10L9 12L13 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">Citation <em>grounding</em></h3>
+        <p class="feature-body">
+          Every extracted record carries a verbatim <code style="font-size:12px;color:var(--nb-teal);">source_quote</code>.
+          A deterministic check confirms that text exists in the parsed source. No quote — no record.
+          Hallucinated figures cannot enter the workflow.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M5 10H15M10 5L15 10L10 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">Forced <em>tool schema</em></h3>
+        <p class="feature-body">
+          Anthropic's tool-use API enforces strict output structure. The model cannot invent
+          fields, skip required ones, or produce malformed output. Structure-level hallucination
+          is eliminated at the API layer.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M10 2L3 7V13C3 15.8 6.1 17.9 10 18C13.9 17.9 17 15.8 17 13V7L10 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">Tiered risk <em>findings</em></h3>
+        <p class="feature-body">
+          HIGH findings block records automatically. MEDIUM findings are surfaced for
+          operator decision. The rules cover entity matching, material price movement,
+          downgrade protection, new entity creation, and more.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M7 10H13M7 7H13M7 13H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">Master <em>recalculation</em></h3>
+        <p class="feature-body">
+          After approval, LibreOffice headless evaluates all formulas in the master workbook —
+          Price, YTD, NAV, and derived cells populate with calculated values before the CSVs
+          are generated.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M10 3V10L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">Logged, <em>timestamped</em> runs</h3>
+        <p class="feature-body">
+          Every run is stored with status, timestamps, source count, master filename, and
+          the full state at each pipeline stage. A complete record exists for every reconciliation
+          cycle — ready for audit or review.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DIFFERENTIATORS ────────────────────────────────── -->
+<section class="diff-section">
+  <div class="container">
+    <div class="diff-inner">
+      <div class="reveal">
+        <p class="eyebrow">Why NavBridge</p>
+        <h2 class="section-title" style="font-size:clamp(28px,3.5vw,44px); margin-bottom:40px;">
+          Right-sized for <em>3 to 30 funds.</em><br>Not 300.
+        </h2>
+        <div class="diff-list">
+          <div class="diff-item">
+            <div class="diff-check"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div>
+              <div class="diff-item-title">Purpose-built for boutique scale</div>
+              <div class="diff-item-body">Enterprise platforms like Canoe Intelligence and Arch are designed for fund-of-funds with hundreds of holdings. NavBridge is calibrated for family offices and specialist managers with 3–30 underlying funds.</div>
+            </div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-check"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div>
+              <div class="diff-item-title">EU data residency — your infrastructure</div>
+              <div class="diff-item-body">NDA-bound fund valuation data stays on your own server. No US cloud provider in the data path. Deployed on EU-hosted infrastructure with full operator control.</div>
+            </div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-check"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div>
+              <div class="diff-item-title">AI that augments, not replaces, judgement</div>
+              <div class="diff-item-body">Two mandatory human approval gates. The system proposes; you decide. HIGHs are blocked, but no figure goes into your master without your sign-off.</div>
+            </div>
+          </div>
+          <div class="diff-item">
+            <div class="diff-check"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div>
+              <div class="diff-item-title">Fraction of the cost</div>
+              <div class="diff-item-body">Commercial alternatives start at £4–10k/month. NavBridge is priced for the scale it serves.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="diff-comparison reveal reveal-d2">
+        <p class="comp-label">Capability comparison</p>
+        <div class="comp-row">
+          <span></span>
+          <span class="comp-col-head" style="color:var(--nb-teal);">NavBridge</span>
+          <span class="comp-col-head" style="color:var(--nb-text-muted);">Manual</span>
+        </div>
+        <div class="comp-row">
+          <span class="comp-row-label">Citation-grounded extraction</span>
+          <span class="comp-yes">✓</span>
+          <span class="comp-no">✗</span>
+        </div>
+        <div class="comp-row">
+          <span class="comp-row-label">Per-firm extraction profiles</span>
+          <span class="comp-yes">✓</span>
+          <span class="comp-no">✗</span>
+        </div>
+        <div class="comp-row">
+          <span class="comp-row-label">Material movement alerts</span>
+          <span class="comp-yes">✓</span>
+          <span class="comp-no">✗</span>
+        </div>
+        <div class="comp-row">
+          <span class="comp-row-label">Auto master recalculation</span>
+          <span class="comp-yes">✓</span>
+          <span class="comp-no">✗</span>
+        </div>
+        <div class="comp-row">
+          <span class="comp-row-label">Downstream CSV load files</span>
+          <span class="comp-yes">✓</span>
+          <span class="comp-part">~</span>
+        </div>
+        <div class="comp-row">
+          <span class="comp-row-label">Full audit trail</span>
+          <span class="comp-yes">✓</span>
+          <span class="comp-no">✗</span>
+        </div>
+        <div class="comp-row">
+          <span class="comp-row-label">EU data residency</span>
+          <span class="comp-yes">✓</span>
+          <span class="comp-yes">✓</span>
+        </div>
+        <div class="comp-row">
+          <span class="comp-row-label">Boutique-scale pricing</span>
+          <span class="comp-yes">✓</span>
+          <span class="comp-yes">✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DATA RESIDENCY CALLOUT ─────────────────────────── -->
+<section class="residency-section">
+  <div class="container">
+    <div class="residency-inner reveal">
+      <div class="residency-icon">
+        <svg viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <path d="M14 3L4 8V14C4 19.5 8.4 24.7 14 26C19.6 24.7 24 19.5 24 14V8L14 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M10 14L12.5 16.5L18 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="residency-text">
+        <h3 class="residency-title">Your data stays in the EU. On your server.</h3>
+        <p class="residency-body">
+          Fund valuation data is commercially sensitive and frequently NDA-bound.
+          NavBridge runs on your own Hetzner (or equivalent) EU infrastructure.
+          No fund data transits US cloud providers. Full operator control, with
+          WebAuthn passkey authentication and per-user permissions.
+        </p>
+      </div>
+      <a href="/contact" class="btn-primary">Learn about deployment →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── WHO IT'S FOR ───────────────────────────────────── -->
+<section class="who-section" id="who">
+  <div class="container">
+    <div class="section-header reveal">
+      <p class="eyebrow eyebrow-lt">Who it's for</p>
+      <h2 class="section-title" style="font-size:clamp(32px,4vw,48px); color:var(--nb-text-lt);">
+        Built for teams processing <em>monthly NAVs</em><br>from alternative managers
+      </h2>
+      <p class="section-body">
+        If your monthly close involves opening PDFs from fund managers and manually
+        updating a spreadsheet, NavBridge is built for you.
+      </p>
+    </div>
+    <div class="who-grid reveal reveal-d1">
+      <div class="who-card">
+        <p class="who-card-tag">Family offices</p>
+        <h3 class="who-card-title">Single and multi-family offices</h3>
+        <p class="who-card-body">
+          Managing allocations across private equity, hedge funds, private credit,
+          and real assets — with a small operations team processing monthly
+          statements from each manager.
+        </p>
+        <div class="who-card-fits">
+          <div class="fit-item">3–30 underlying funds</div>
+          <div class="fit-item">Operations team of 1–5</div>
+          <div class="fit-item">EU domicile, data-sensitive</div>
+        </div>
+      </div>
+      <div class="who-card">
+        <p class="who-card-tag">Boutique managers</p>
+        <h3 class="who-card-title">Fund-of-funds &amp; multi-manager</h3>
+        <p class="who-card-body">
+          Specialist fund-of-funds and multi-manager vehicles where valuation
+          reconciliation is a monthly operational burden and accuracy is
+          non-negotiable for investor reporting.
+        </p>
+        <div class="who-card-fits">
+          <div class="fit-item">Monthly NAV reconciliation</div>
+          <div class="fit-item">Investor-grade audit trail</div>
+          <div class="fit-item">Downstream system integration</div>
+        </div>
+      </div>
+      <div class="who-card">
+        <p class="who-card-tag">Operations teams</p>
+        <h3 class="who-card-title">Investment operations &amp; finance</h3>
+        <p class="who-card-body">
+          Operations professionals spending hours each month reconciling fund manager
+          PDFs into a master spreadsheet — and who need a repeatable, auditable
+          process that doesn't depend on manual accuracy.
+        </p>
+        <div class="who-card-fits">
+          <div class="fit-item">Replace manual copy-and-paste</div>
+          <div class="fit-item">Control evidence for audit</div>
+          <div class="fit-item">Speed up monthly close</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ───────────────────────────────────────────── -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-inner reveal">
+      <h2 class="cta-title">
+        Ready to automate your monthly valuation cycle?
+      </h2>
+      <p class="cta-body">
+        NavBridge is currently in controlled deployment. We're onboarding a small
+        number of early-access clients who want to eliminate manual reconciliation
+        and build a defensible audit trail from day one.
+      </p>
+      <div class="cta-actions">
+        <a href="/contact" class="btn-cta">Request access →</a>
+        <a href="/contact" class="btn-cta-ghost">Talk to the team</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('astro:page-load', function() {
+    // Smooth anchor scrolls with offset for fixed nav
+    document.querySelectorAll('a[href^="/#"]').forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        var hash = link.getAttribute('href').replace('/', '');
+        var target = document.querySelector(hash);
+        if (target) {
+          e.preventDefault();
+          var offset = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 68;
+          var top = target.getBoundingClientRect().top + window.scrollY - offset - 16;
+          window.scrollTo({ top: top, behavior: 'smooth' });
+        }
+      });
+    });
+  });
+</script>
+</BaseLayout>

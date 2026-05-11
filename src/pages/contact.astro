@@ -1,0 +1,228 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout
+  title="Request Access — NavBridge"
+  description="NavBridge is in controlled early-access deployment. Get in touch to discuss your valuation reconciliation workflow."
+>
+<style>
+:root {
+  --nb-navy:#0B1929;--nb-navy-alt:#0F2235;--nb-navy-card:#132840;
+  --nb-light:#F4F7FA;--nb-white:#FFFFFF;--nb-border:#DCE4EE;
+  --nb-border-dk:#1A3352;--nb-text:#0B1929;--nb-text-sec:#4A6070;
+  --nb-text-muted:#7A96A8;--nb-text-lt:#E8EDF2;--nb-text-lt-dim:#7A96A8;
+  --nb-teal:#00BFA6;--nb-teal-dk:#009E88;--nb-teal-lt:#33CFBA;
+  --nb-teal-glow:rgba(0,191,166,0.12);
+  --nb-head:'Cormorant Garamond',Georgia,serif;
+  --nb-body:'DM Sans',system-ui,sans-serif;
+  --nav-h:68px;--max-w:1160px;
+  --gutter:clamp(20px,5vw,64px);--section-pad:clamp(64px,8vw,112px);
+  --ease:cubic-bezier(0.16,1,0.3,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-font-smoothing:antialiased;}
+body{background:var(--nb-light);color:var(--nb-text);font-family:var(--nb-body);font-size:16px;line-height:1.7;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;}
+.container{width:100%;max-width:var(--max-w);margin:0 auto;padding:0 var(--gutter);}
+.eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--nb-teal);margin-bottom:20px;}
+.eyebrow::before{content:'';display:block;width:24px;height:1px;background:var(--nb-teal);flex-shrink:0;}
+
+.page-hero {
+  background: var(--nb-navy);
+  padding: calc(var(--nav-h) + 72px) 0 80px;
+  position: relative; overflow: hidden;
+}
+.hero-grid-overlay {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(0,191,166,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,191,166,0.04) 1px,transparent 1px);
+  background-size: 48px 48px;
+}
+.page-hero h1 {
+  font-family: var(--nb-head); font-weight: 300;
+  font-size: clamp(36px,5vw,60px); line-height: 1.06;
+  color: var(--nb-text-lt); max-width: 560px;
+  letter-spacing: -0.02em;
+}
+.page-hero h1 em { font-style: italic; color: var(--nb-teal); }
+.page-hero p { font-size: 17px; color: var(--nb-text-lt-dim); margin-top: 20px; max-width: 480px; line-height: 1.65; }
+
+.contact-section { padding: var(--section-pad) 0; }
+.contact-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+
+.contact-info h2 { font-family: var(--nb-head); font-size: 32px; font-weight: 300; color: var(--nb-text); margin-bottom: 16px; }
+.contact-info h2 em { font-style: italic; color: var(--nb-teal); }
+.contact-info p { font-size: 15px; color: var(--nb-text-sec); line-height: 1.7; margin-bottom: 32px; }
+.info-item { display: flex; align-items: flex-start; gap: 16px; padding: 20px 0; border-bottom: 1px solid var(--nb-border); }
+.info-item:first-of-type { border-top: 1px solid var(--nb-border); }
+.info-icon { width: 36px; height: 36px; flex-shrink: 0; background: var(--nb-teal-glow); border: 1px solid rgba(0,191,166,0.2); display: flex; align-items: center; justify-content: center; }
+.info-icon svg { width: 16px; height: 16px; color: var(--nb-teal); }
+.info-label { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--nb-text-muted); margin-bottom: 4px; }
+.info-value { font-size: 15px; color: var(--nb-text); }
+.info-value a { color: var(--nb-teal); transition: opacity 0.18s; }
+.info-value a:hover { opacity: 0.8; }
+
+.contact-form {
+  background: var(--nb-white);
+  border: 1px solid var(--nb-border);
+  padding: 40px;
+}
+.form-group { margin-bottom: 24px; }
+.form-label { display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--nb-text-sec); margin-bottom: 8px; }
+.form-input, .form-textarea, .form-select {
+  width: 100%; padding: 12px 16px;
+  font-family: var(--nb-body); font-size: 15px;
+  color: var(--nb-text); background: var(--nb-light);
+  border: 1px solid var(--nb-border);
+  outline: none; transition: border-color 0.2s;
+  appearance: none;
+}
+.form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--nb-teal); background: var(--nb-white); }
+.form-textarea { resize: vertical; min-height: 120px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.btn-submit {
+  width: 100%; padding: 14px;
+  font-family: var(--nb-body); font-size: 12px; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--nb-navy); background: var(--nb-teal);
+  border: none; cursor: pointer; transition: background 0.2s;
+}
+.btn-submit:hover { background: var(--nb-teal-lt); }
+.form-note { font-size: 12px; color: var(--nb-text-muted); margin-top: 12px; }
+.form-success { display: none; text-align: center; padding: 40px 20px; }
+.form-success.visible { display: block; }
+.form-success-icon { font-size: 40px; margin-bottom: 16px; }
+.form-success h3 { font-family: var(--nb-head); font-size: 28px; font-weight: 300; color: var(--nb-text); margin-bottom: 8px; }
+.form-success p { font-size: 15px; color: var(--nb-text-sec); }
+
+@media (max-width: 768px) {
+  .contact-inner { grid-template-columns: 1fr; gap: 48px; }
+  .form-row { grid-template-columns: 1fr; }
+  .contact-form { padding: 28px 20px; }
+}
+</style>
+
+<section class="page-hero">
+  <div class="hero-grid-overlay" aria-hidden="true"></div>
+  <div class="container">
+    <p class="eyebrow" style="color:var(--nb-teal);">Early access</p>
+    <h1>Request <em>access</em> to NavBridge</h1>
+    <p>We're onboarding a limited number of early-access clients. Tell us about your workflow and we'll be in touch.</p>
+  </div>
+</section>
+
+<section class="contact-section">
+  <div class="container">
+    <div class="contact-inner">
+      <div class="contact-info">
+        <p class="eyebrow">Get in touch</p>
+        <h2>Let's talk about your <em>monthly close</em></h2>
+        <p>
+          NavBridge is purpose-built for teams processing valuations from 3–30 underlying
+          alternative funds. If that sounds like your workflow, we'd like to understand it.
+        </p>
+        <div class="info-item">
+          <div class="info-icon">
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 4L8 9L14 4M2 4H14V12H2V4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="info-label">Email</div>
+            <div class="info-value"><a href="mailto:contact@caelion.consulting">contact@caelion.consulting</a></div>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 4V8L11 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <div class="info-label">Book a call</div>
+            <div class="info-value"><a href="https://calendly.com/kam-h-modh" target="_blank" rel="noopener">calendly.com/kam-h-modh</a></div>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2L3 6V13H13V6L8 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="info-label">Built by</div>
+            <div class="info-value"><a href="https://caelion.consulting" target="_blank" rel="noopener">Caelion Ltd — caelion.consulting</a></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-form">
+        <form id="contactForm" action="https://formspree.io/f/mjgpowpg" method="POST">
+          <input type="hidden" name="_subject" value="NavBridge — Access Request" />
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="firstName">First name *</label>
+              <input class="form-input" type="text" id="firstName" name="firstName" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="lastName">Last name *</label>
+              <input class="form-input" type="text" id="lastName" name="lastName" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="email">Work email *</label>
+            <input class="form-input" type="email" id="email" name="email" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="org">Organisation</label>
+            <input class="form-input" type="text" id="org" name="organisation" placeholder="e.g. Highgate Family Office" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="funds">How many underlying funds do you reconcile?</label>
+            <select class="form-select" id="funds" name="fundCount">
+              <option value="">Select…</option>
+              <option>1–5</option>
+              <option>6–15</option>
+              <option>16–30</option>
+              <option>30+</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="message">Tell us about your current process</label>
+            <textarea class="form-textarea" id="message" name="message" placeholder="How do you currently reconcile manager valuations? What takes the most time?"></textarea>
+          </div>
+          <button type="submit" class="btn-submit">Send request →</button>
+          <p class="form-note">We'll respond within one business day. No sales automation — a real person will read this.</p>
+        </form>
+        <div class="form-success" id="formSuccess">
+          <div class="form-success-icon">✓</div>
+          <h3>Request received</h3>
+          <p>We'll be in touch within one business day.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('astro:page-load', function() {
+  var form = document.getElementById('contactForm');
+  if (!form) return;
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var btn = form.querySelector('.btn-submit');
+    btn.textContent = 'Sending…'; btn.disabled = true;
+    try {
+      var res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' }
+      });
+      if (res.ok) {
+        form.style.display = 'none';
+        document.getElementById('formSuccess').classList.add('visible');
+      } else {
+        btn.textContent = 'Send request →'; btn.disabled = false;
+        alert('Something went wrong. Please email contact@caelion.consulting directly.');
+      }
+    } catch(err) {
+      btn.textContent = 'Send request →'; btn.disabled = false;
+      alert('Something went wrong. Please email contact@caelion.consulting directly.');
+    }
+  });
+});
+</script>
+</BaseLayout>
